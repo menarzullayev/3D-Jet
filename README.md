@@ -1,5 +1,7 @@
 # 3D Jet — Interactive Viewer
 
+**Live demo:** [3djet.bugvector.uz](https://3djet.bugvector.uz)
+
 An interactive 3D jet aircraft viewer built with [model-viewer](https://modelviewer.dev/), vanilla JavaScript ES modules, and SCSS. No frameworks, no bundler — pure static files.
 
 ## Features

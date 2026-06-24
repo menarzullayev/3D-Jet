@@ -1,0 +1,11 @@
+{
+  "name": "3d-jet",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test assets/js/camera.test.js assets/js/storage.test.js",
+    "scss": "npx sass assets/css/style.scss assets/css/style.min.css --style=compressed --source-map",
+    "serve": "npx serve .",
+    "deploy": "npx wrangler pages deploy . --project-name=3d-jet --branch=main"
+  }
+}

@@ -6,6 +6,14 @@ import {
 import { loadPrefs, savePrefs } from './storage.js';
 import { animateToCamera, resetCameraAttrs, buildScrollCamera } from './camera.js';
 
+// ── Model source (default or ?src= override) ──────────────────────────────
+const DEFAULT_MODEL_SRC = './assets/model/fly.glb';
+const MODEL_SRC = (() => {
+    const param = new URLSearchParams(window.location.search).get('src');
+    if (!param) return DEFAULT_MODEL_SRC;
+    try { new URL(param, window.location.href); return param; } catch { return DEFAULT_MODEL_SRC; }
+})();
+
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const modelEl           = document.querySelector('#model');
 const loadingOverlay    = document.getElementById('loadingOverlay');
@@ -258,34 +266,6 @@ function updateStatsBestEffort() {
     if (!modelEl.model) return;
     if (statMaterials)  statMaterials.textContent  = String(modelEl.model.materials?.length  ?? '—');
     if (statAnimations) statAnimations.textContent = String(modelEl.model.animations?.length ?? '—');
-    if (!statMeshes && !statTriangles) return;
-
-    try {
-        const sceneSym = Object.getOwnPropertySymbols(modelEl).find(s => s.description === 'scene');
-        const root = sceneSym ? (modelEl[sceneSym]?.model || modelEl[sceneSym]) : null;
-        if (!root) throw new Error('scene unavailable');
-
-        let meshes = 0, triangles = 0;
-        const stack = [root];
-        while (stack.length) {
-            const obj = stack.pop();
-            if (!obj) continue;
-            if (obj.isMesh) {
-                meshes++;
-                const g = obj.geometry;
-                if (g?.index?.count)                     triangles += g.index.count / 3;
-                else if (g?.attributes?.position?.count) triangles += g.attributes.position.count / 3;
-            }
-            if (obj.children?.length) stack.push(...obj.children);
-        }
-        if (statMeshes)    statMeshes.textContent    = String(meshes);
-        if (statTriangles) statTriangles.textContent = triangles >= 1000
-            ? `${Math.round(triangles / 1000)}k`
-            : String(Math.round(triangles));
-    } catch {
-        if (statMeshes)    statMeshes.textContent    = '—';
-        if (statTriangles) statTriangles.textContent = '—';
-    }
 }
 
 // ── Events ────────────────────────────────────────────────────────────────
@@ -328,9 +308,8 @@ function bindEvents() {
     retryBtn.addEventListener('click', () => {
         hideError();
         showLoading();
-        const src = modelEl.getAttribute('src');
         modelEl.setAttribute('src', '');
-        requestAnimationFrame(() => modelEl.setAttribute('src', src));
+        requestAnimationFrame(() => modelEl.setAttribute('src', MODEL_SRC));
     });
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -372,6 +351,8 @@ function init() {
     if (!modelEl) return;
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+
+    modelEl.setAttribute('src', MODEL_SRC);
 
     applyStoredPrefs();
     bindEvents();

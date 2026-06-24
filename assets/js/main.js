@@ -264,8 +264,37 @@ async function takePhoto() {
 // ── Model stats ───────────────────────────────────────────────────────────
 function updateStatsBestEffort() {
     if (!modelEl.model) return;
-    if (statMaterials)  statMaterials.textContent  = String(modelEl.model.materials?.length  ?? '—');
-    if (statAnimations) statAnimations.textContent = String(modelEl.model.animations?.length ?? '—');
+
+    if (statMaterials)  statMaterials.textContent  = String(modelEl.model.materials?.length ?? '—');
+    if (statAnimations) statAnimations.textContent = String(modelEl.availableAnimations?.length ?? '—');
+
+    if (!statMeshes && !statTriangles) return;
+    try {
+        const sceneSym = Object.getOwnPropertySymbols(modelEl).find(s => s.description === 'scene');
+        const root = sceneSym ? (modelEl[sceneSym]?.model || modelEl[sceneSym]) : null;
+        if (!root) throw new Error('no scene');
+
+        let meshes = 0, triangles = 0;
+        const stack = [root];
+        while (stack.length) {
+            const obj = stack.pop();
+            if (!obj) continue;
+            if (obj.isMesh) {
+                meshes++;
+                const g = obj.geometry;
+                if (g?.index?.count)                     triangles += g.index.count / 3;
+                else if (g?.attributes?.position?.count) triangles += g.attributes.position.count / 3;
+            }
+            if (obj.children?.length) stack.push(...obj.children);
+        }
+        if (statMeshes)    statMeshes.textContent    = String(meshes);
+        if (statTriangles) statTriangles.textContent = triangles >= 1000
+            ? `${Math.round(triangles / 1000)}k`
+            : String(Math.round(triangles));
+    } catch {
+        if (statMeshes)    statMeshes.textContent    = '—';
+        if (statTriangles) statTriangles.textContent = '—';
+    }
 }
 
 // ── Events ────────────────────────────────────────────────────────────────

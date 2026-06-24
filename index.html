@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive 3D jet preview powered by model-viewer. Drag to orbit, scroll to explore.">
+    <title>3D Jet — Interactive Preview</title>
+    <link rel="stylesheet" href="./assets/css/style.min.css">
+</head>
+<body>
+    <a class="skip-link" href="#mainContent">Skip to content</a>
+
+    <model-viewer
+        id="model"
+        src="./assets/model/fly.glb"
+        alt="Futuristic jet aircraft 3D model"
+        camera-controls
+        touch-action="pan-y"
+        interaction-prompt="auto"
+        shadow-intensity="1.2"
+        exposure="1.4"
+        environment-image="neutral"
+        camera-target="0m 0.2m 0m"
+        camera-orbit="35deg 75deg 110%"
+        min-camera-orbit="auto auto 60%"
+        max-camera-orbit="auto auto 180%"
+        loading="eager"
+        reveal="auto"
+        auto-rotate
+        auto-rotate-delay="2000"
+        rotation-per-second="12deg"
+    ></model-viewer>
+
+    <div id="loadingOverlay" class="overlay overlay--loading" aria-live="polite" aria-busy="true">
+        <div class="overlay__card">
+            <div class="spinner" role="status" aria-label="Loading 3D model"></div>
+            <p>Loading 3D model…</p>
+        </div>
+    </div>
+
+    <div id="errorOverlay" class="overlay overlay--error hidden" aria-live="assertive">
+        <div class="overlay__card">
+            <p class="overlay__title">Model failed to load</p>
+            <p class="overlay__text">Check your internet connection (CDN required) or try Firefox if WebGL is disabled in Chrome.</p>
+            <button type="button" id="retryBtn" class="btn btn--primary">Retry</button>
+        </div>
+    </div>
+
+    <div class="app-chrome" id="mainContent">
+        <header class="dock dock--top" aria-label="Viewer controls">
+            <div class="dock__brand">
+                <a class="dock__author" href="https://github.com/menarzullayev" target="_blank" rel="noopener noreferrer">menarzullayev</a>
+                <strong class="dock__title">3D Jet</strong>
+            </div>
+
+            <nav class="seg-control" aria-label="Camera presets" role="group">
+                <button type="button" class="seg-btn preset-btn" data-preset="cinematic" aria-pressed="false">Cinematic</button>
+                <button type="button" class="seg-btn preset-btn" data-preset="top" aria-pressed="false">Top</button>
+                <button type="button" class="seg-btn preset-btn" data-preset="engine" aria-pressed="false">Engine</button>
+                <button type="button" class="seg-btn preset-btn" data-preset="pilot" aria-pressed="false">Pilot</button>
+                <button type="button" class="seg-btn preset-btn" data-preset="landing" aria-pressed="false">Landing</button>
+            </nav>
+
+            <div class="dock__actions">
+                <button type="button" id="photoBtn" class="btn btn--primary btn--icon" aria-label="Take photo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <span class="btn__label">Photo</span>
+                </button>
+                <button type="button" id="autoRotateBtn" class="btn btn--ghost btn--icon" aria-pressed="true" aria-label="Auto-rotate on">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+                    <span class="btn__label">Rotate</span>
+                </button>
+                <button type="button" id="resetCameraBtn" class="btn btn--ghost btn--icon" aria-label="Reset view">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 3 3 9 9 9"/></svg>
+                    <span class="btn__label">Reset</span>
+                </button>
+                <button type="button" id="appearanceToggle" class="btn btn--ghost btn--icon btn--mobile-only" aria-expanded="false" aria-controls="appearancePanel" aria-label="Toggle appearance panel">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <span class="btn__label">Style</span>
+                </button>
+            </div>
+        </header>
+
+        <footer class="dock dock--bottom" aria-label="Interaction guide and model info">
+            <ul class="tips" aria-label="Interaction tips">
+                <li><span class="tips__key">Drag</span> orbit</li>
+                <li><span class="tips__key">Scroll</span> cinematic</li>
+                <li><span class="tips__key">Pinch</span> zoom</li>
+            </ul>
+
+            <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+                <span class="scroll-hint__mouse"></span>
+                <span>Scroll to explore</span>
+            </div>
+
+            <dl class="stats" id="modelStats" aria-label="Model statistics">
+                <div class="stats__item">
+                    <dt>Meshes</dt>
+                    <dd id="statMeshes">—</dd>
+                </div>
+                <div class="stats__item">
+                    <dt>Materials</dt>
+                    <dd id="statMaterials">—</dd>
+                </div>
+                <div class="stats__item">
+                    <dt>Animations</dt>
+                    <dd id="statAnimations">—</dd>
+                </div>
+                <div class="stats__item">
+                    <dt>Triangles</dt>
+                    <dd id="statTriangles">—</dd>
+                </div>
+            </dl>
+        </footer>
+    </div>
+
+    <aside class="appearance" id="appearancePanel" aria-label="Appearance settings">
+        <div class="appearance__header">
+            <h2 class="appearance__title">Appearance</h2>
+            <button type="button" class="appearance__close btn--mobile-only" id="appearanceClose" aria-label="Close appearance panel">×</button>
+        </div>
+
+        <label class="field" for="exposureRange">
+            <span class="field__label">Exposure</span>
+            <div class="field__row">
+                <input id="exposureRange" type="range" min="0.4" max="2.4" step="0.1" value="1.4">
+                <output class="field__value" id="exposureValue" for="exposureRange">1.4</output>
+            </div>
+        </label>
+
+        <div class="field">
+            <span class="field__label" id="colorLabel">Body color</span>
+            <div class="swatches" role="group" aria-labelledby="colorLabel">
+                <button type="button" class="swatch-btn" data-color="#0b1220" aria-label="Stealth Black" title="Stealth Black" style="--swatch:#0b1220"></button>
+                <button type="button" class="swatch-btn" data-color="#cbd5e1" aria-label="Titanium Silver" title="Titanium Silver" style="--swatch:#cbd5e1"></button>
+                <button type="button" class="swatch-btn" data-color="#2f4b3a" aria-label="Military Green" title="Military Green" style="--swatch:#2f4b3a"></button>
+                <button type="button" class="swatch-btn" data-color="#60a5fa" aria-label="Sky Blue" title="Sky Blue" style="--swatch:#60a5fa"></button>
+                <button type="button" class="swatch-btn" data-color="#202b3f" aria-label="Default Midnight" title="Default Midnight" style="--swatch:#202b3f"></button>
+                <button type="button" class="swatch-btn swatch-btn--custom" id="customSwatchBtn" aria-label="Custom color" title="Pick custom color" aria-pressed="false"></button>
+            </div>
+            <input id="colorPicker" class="color-picker-input" type="color" value="#202b3f" aria-label="Custom color">
+        </div>
+    </aside>
+
+    <div class="scroll-track" aria-hidden="true"></div>
+
+    <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+    <script nomodule src="https://unpkg.com/@google/model-viewer@latest/dist/model-viewer-legacy.js"></script>
+    <script type="module" src="./assets/js/main.js"></script>
+</body>
+</html>

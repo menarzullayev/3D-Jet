@@ -683,9 +683,89 @@ button {
     }
 }
 
+/* ── Progress bar ── */
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    margin-top: 16px;
+}
+
+.progress-bar__fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.25s ease;
+}
+
+/* ── Share toast ── */
+
+.share-toast {
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + var(--dock-bottom-h) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    background: rgba(10, 18, 40, 0.92);
+    border: 1px solid var(--border-strong);
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 500;
+    z-index: 70;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.share-toast.visible {
+    opacity: 1;
+}
+
+/* ── Animation controls ── */
+
+.anim-select {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    padding: 5px 10px;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    outline: none;
+    max-width: 140px;
+}
+
+.anim-select option {
+    background: #0d1730;
+    color: #fff;
+}
+
+.anim-select:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* ── AR button (model-viewer slot) ── */
+
+.ar-btn {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + var(--dock-bottom-h) + 16px);
+    right: 16px;
+}
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .spinner,
     .scroll-hint__mouse::after { animation: none; }
     .appearance { transition: none; }
+    .progress-bar__fill,
+    .share-toast { transition: none; }
 }

@@ -381,7 +381,8 @@ function init() {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
 
-    modelEl.setAttribute('src', MODEL_SRC);
+    const urlParam = new URLSearchParams(window.location.search).get('src');
+    if (urlParam) modelEl.setAttribute('src', MODEL_SRC);
 
     applyStoredPrefs();
     bindEvents();

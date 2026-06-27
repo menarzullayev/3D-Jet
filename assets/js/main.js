@@ -257,8 +257,8 @@ function applyShareParams() {
     const target   = p.get('target');
     const exposure = p.get('exposure');
     const color    = p.get('color');
-    if (orbit)    modelEl.cameraOrbit  = decodeURIComponent(orbit);
-    if (target)   modelEl.cameraTarget = decodeURIComponent(target);
+    if (orbit)    modelEl.cameraOrbit  = orbit;
+    if (target)   modelEl.cameraTarget = target;
     if (exposure) { activeExposure = Number(exposure); setExposure(activeExposure); }
     if (color)    applyColor('#' + color);
 }

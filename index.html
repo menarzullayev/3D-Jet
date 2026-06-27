@@ -45,12 +45,22 @@
         auto-rotate
         auto-rotate-delay="2000"
         rotation-per-second="12deg"
-    ></model-viewer>
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+    >
+        <button slot="ar-button" class="btn btn--primary ar-btn" aria-label="View in AR">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span class="btn__label">View in AR</span>
+        </button>
+    </model-viewer>
 
     <div id="loadingOverlay" class="overlay overlay--loading" aria-live="polite" aria-busy="true">
         <div class="overlay__card">
             <div class="spinner" role="status" aria-label="Loading 3D model"></div>
             <p>Loading 3D model…</p>
+            <div class="progress-bar" aria-hidden="true">
+                <div class="progress-bar__fill" id="progressFill"></div>
+            </div>
         </div>
     </div>
 
@@ -62,7 +72,7 @@
         </div>
     </div>
 
-    <div class="app-chrome" id="mainContent">
+    <div class="app-chrome" id="mainContent" tabindex="-1">
         <header class="dock dock--top" aria-label="Viewer controls">
             <div class="dock__brand">
                 <a class="dock__author" href="https://github.com/menarzullayev" target="_blank" rel="noopener noreferrer">menarzullayev</a>
@@ -89,6 +99,14 @@
                 <button type="button" id="resetCameraBtn" class="btn btn--ghost btn--icon" aria-label="Reset view">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 3 3 9 9 9"/></svg>
                     <span class="btn__label">Reset</span>
+                </button>
+                <button type="button" id="shareBtn" class="btn btn--ghost btn--icon" aria-label="Copy share link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <span class="btn__label">Share</span>
+                </button>
+                <button type="button" id="fullscreenBtn" class="btn btn--ghost btn--icon" aria-label="Fullscreen" aria-pressed="false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    <span class="btn__label">Full</span>
                 </button>
                 <button type="button" id="appearanceToggle" class="btn btn--ghost btn--icon btn--mobile-only" aria-expanded="false" aria-controls="appearancePanel" aria-label="Toggle appearance panel">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -156,14 +174,25 @@
             </div>
             <input id="colorPicker" class="color-picker-input" type="color" value="#202b3f" aria-label="Custom color">
         </div>
+
+        <div class="field" id="animField" style="display:none">
+            <span class="field__label" id="animLabel">Animation</span>
+            <div class="field__row">
+                <button type="button" class="btn btn--ghost btn--icon" id="animPlayBtn" aria-label="Play animation" aria-pressed="false">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+                <select class="anim-select" id="animSelect" aria-labelledby="animLabel"></select>
+            </div>
+        </div>
     </aside>
 
     <div class="scroll-track" aria-hidden="true"></div>
 
+    <div id="shareToast" class="share-toast" aria-live="polite" aria-atomic="true"></div>
     <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
-    <script nomodule src="https://unpkg.com/@google/model-viewer@latest/dist/model-viewer-legacy.js"></script>
+    <script nomodule src="https://unpkg.com/@google/model-viewer@3.1.1/dist/model-viewer-legacy.js"></script>
     <script type="module" src="./assets/js/main.js"></script>
 </body>
 </html>

@@ -7,6 +7,7 @@
     <title>3D Jet — Interactive Preview</title>
 
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="preload" href="./assets/model/fly.glb" as="fetch" crossorigin="anonymous">
 
     <meta property="og:type"        content="website">
     <meta property="og:title"       content="3D Jet — Interactive Preview">
@@ -27,7 +28,7 @@
 
     <model-viewer
         id="model"
-        src=""
+        src="./assets/model/fly.glb"
         alt="Futuristic jet aircraft 3D model"
         camera-controls
         touch-action="pan-y"

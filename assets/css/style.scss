@@ -133,7 +133,6 @@ button {
     animation: spin 0.85s linear infinite;
 }
 
-/* ── App chrome ── */
 
 .app-chrome {
     position: fixed;
@@ -205,7 +204,6 @@ button {
     flex-shrink: 0;
 }
 
-/* ── Segmented camera control ── */
 
 .seg-control {
     display: flex;
@@ -258,7 +256,6 @@ button {
     outline-offset: 2px;
 }
 
-/* ── Buttons ── */
 
 .btn {
     display: inline-flex;
@@ -320,7 +317,6 @@ button {
     display: none;
 }
 
-/* ── Appearance panel (right side) ── */
 
 .appearance {
     pointer-events: auto;
@@ -461,7 +457,6 @@ button {
     background: var(--swatch);
 }
 
-/* ── Bottom dock: tips + stats ── */
 
 .tips {
     list-style: none;
@@ -576,7 +571,6 @@ button {
     70% { transform: translate(-50%, 8px); opacity: 0.15; }
 }
 
-/* ── Tablet ── */
 
 @media (max-width: 900px) {
     :root {
@@ -652,7 +646,6 @@ button {
     }
 }
 
-/* ── Mobile ── */
 
 @media (max-width: 520px) {
     .btn__label {
@@ -683,7 +676,6 @@ button {
     }
 }
 
-/* ── Progress bar ── */
 
 .progress-bar {
     width: 100%;
@@ -702,7 +694,6 @@ button {
     transition: width 0.25s ease;
 }
 
-/* ── Share toast ── */
 
 .share-toast {
     position: fixed;
@@ -727,7 +718,6 @@ button {
     opacity: 1;
 }
 
-/* ── Animation controls ── */
 
 .anim-select {
     flex: 1;
@@ -753,7 +743,6 @@ button {
     outline-offset: 2px;
 }
 
-/* ── AR button (model-viewer slot) ── */
 
 .ar-btn {
     position: absolute;

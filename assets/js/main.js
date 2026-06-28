@@ -7,7 +7,6 @@ import {
 import { loadPrefs, savePrefs } from './storage.js';
 import { animateToCamera, resetCameraAttrs, buildScrollCamera } from './camera.js';
 
-// ── Model source (default or ?src= override) ──────────────────────────────
 const DEFAULT_MODEL_SRC = './assets/model/fly.glb';
 const MODEL_SRC = (() => {
     const param = new URLSearchParams(window.location.search).get('src');
@@ -15,7 +14,6 @@ const MODEL_SRC = (() => {
     try { new URL(param, window.location.href); return param; } catch { return DEFAULT_MODEL_SRC; }
 })();
 
-// ── DOM refs ──────────────────────────────────────────────────────────────
 const modelEl          = document.querySelector('#model');
 const loadingOverlay   = document.getElementById('loadingOverlay');
 const errorOverlay     = document.getElementById('errorOverlay');
@@ -48,7 +46,6 @@ const statTriangles  = document.getElementById('statTriangles');
 const presetButtons = Array.from(document.querySelectorAll('.preset-btn'));
 const swatchButtons = Array.from(document.querySelectorAll('.swatch-btn[data-color]'));
 
-// ── App state ─────────────────────────────────────────────────────────────
 let scrollTicking            = false;
 let hintHidden               = false;
 let autoRotateRestoreTimeout = null;
@@ -58,12 +55,10 @@ let activeExposure           = DEFAULT_EXPOSURE;
 let toastTimeout             = null;
 let animPlaying              = false;
 
-// ── Accessibility ─────────────────────────────────────────────────────────
 function announce(msg) {
     if (liveRegion) liveRegion.textContent = msg;
 }
 
-// ── Loading overlay ───────────────────────────────────────────────────────
 function setLoadingProgress(pct) {
     const p = loadingOverlay.querySelector('p');
     if (p) p.textContent = pct < 100 ? `Loading 3D model… ${pct}%` : 'Loading 3D model…';
@@ -83,7 +78,6 @@ function showLoading(text) {
     loadingOverlay.setAttribute('aria-busy', 'true');
 }
 
-// ── Error overlay ─────────────────────────────────────────────────────────
 function detectErrorMessage() {
     if (!navigator.onLine) return 'No internet connection. Check your network and retry.';
     const canvas = document.createElement('canvas');
@@ -103,7 +97,6 @@ function hideError() {
     errorOverlay.classList.add('hidden');
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────
 function showToast(msg) {
     if (!shareToast) return;
     shareToast.textContent = msg;
@@ -112,21 +105,18 @@ function showToast(msg) {
     toastTimeout = window.setTimeout(() => shareToast.classList.remove('visible'), 2400);
 }
 
-// ── Appearance panel ──────────────────────────────────────────────────────
 function setAppearanceOpen(open) {
     if (!appearancePanel || !appearanceToggle) return;
     appearancePanel.classList.toggle('is-open', open);
     appearanceToggle.setAttribute('aria-expanded', String(open));
 }
 
-// ── Exposure ──────────────────────────────────────────────────────────────
 function setExposure(value) {
     modelEl.exposure         = value;
     exposureRange.value      = String(value);
     if (exposureValue) exposureValue.textContent = Number(value).toFixed(1);
 }
 
-// ── Color ─────────────────────────────────────────────────────────────────
 function hexToRgba(hex) {
     const n = hex.replace('#', '');
     const s = n.length === 3 ? n.split('').map(c => c + c).join('') : n;
@@ -162,7 +152,6 @@ function applyColor(hex) {
     savePrefs({ color: hex });
 }
 
-// ── Camera ────────────────────────────────────────────────────────────────
 function setActivePreset(key) {
     presetButtons.forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.preset === key)));
 }
@@ -193,7 +182,6 @@ function applyDefaultCamera() {
     setExposure(activeExposure);
 }
 
-// ── Auto-rotate ───────────────────────────────────────────────────────────
 function setAutoRotate(enabled) {
     if (enabled) modelEl.setAttribute('auto-rotate', '');
     else         modelEl.removeAttribute('auto-rotate');
@@ -207,7 +195,6 @@ function toggleAutoRotate() {
     announce(`Auto-rotate ${enabled ? 'on' : 'off'}`);
 }
 
-// ── Fullscreen ────────────────────────────────────────────────────────────
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -229,7 +216,6 @@ function onFullscreenChange() {
     }
 }
 
-// ── Share ─────────────────────────────────────────────────────────────────
 async function shareLink() {
     const params = new URLSearchParams(window.location.search);
     params.set('orbit', modelEl.cameraOrbit ?? DEFAULT_ORBIT);
@@ -250,7 +236,6 @@ async function shareLink() {
     }
 }
 
-// ── Share URL params ──────────────────────────────────────────────────────
 function applyShareParams() {
     const p = new URLSearchParams(window.location.search);
     const orbit    = p.get('orbit');
@@ -263,7 +248,6 @@ function applyShareParams() {
     if (color)    applyColor('#' + color);
 }
 
-// ── Scroll camera ─────────────────────────────────────────────────────────
 function updateScrollCamera() {
     if (presetCameraActive || window.scrollY < SCROLL_THRESHOLD_PX) {
         if (!presetCameraActive) applyDefaultCamera();
@@ -307,7 +291,6 @@ function onScroll() {
     });
 }
 
-// ── Reset ─────────────────────────────────────────────────────────────────
 function resetCamera() {
     presetCameraActive = false;
     presetButtons.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
@@ -318,7 +301,6 @@ function resetCamera() {
     announce('View reset');
 }
 
-// ── Photo ─────────────────────────────────────────────────────────────────
 async function takePhoto() {
     if (!modelEl?.loaded) return;
     showLoading('Capturing screenshot…');
@@ -346,7 +328,6 @@ async function takePhoto() {
     }
 }
 
-// ── Model stats ───────────────────────────────────────────────────────────
 function updateStatsBestEffort() {
     if (!modelEl.model) return;
     if (statMaterials)  statMaterials.textContent  = String(modelEl.model.materials?.length ?? '—');
@@ -379,7 +360,6 @@ function updateStatsBestEffort() {
     }
 }
 
-// ── Animations ────────────────────────────────────────────────────────────
 function setupAnimations() {
     const anims = modelEl.availableAnimations;
     if (!anims?.length || !animField) return;
@@ -415,7 +395,6 @@ function toggleAnimPlayback() {
     announce(`Animation ${animPlaying ? 'playing' : 'paused'}`);
 }
 
-// ── Keyboard shortcuts ────────────────────────────────────────────────────
 function handleKeydown(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -450,7 +429,6 @@ function handleKeydown(e) {
     }
 }
 
-// ── Events ────────────────────────────────────────────────────────────────
 function bindEvents() {
     exposureRange.addEventListener('input', () => {
         activeExposure = Number(exposureRange.value);
@@ -530,7 +508,6 @@ function bindModelEvents() {
     });
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
 function applyStoredPrefs() {
     const prefs    = loadPrefs();
     const color    = prefs.color    ?? DEFAULT_COLOR;

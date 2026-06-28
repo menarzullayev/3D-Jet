@@ -1,9 +1,0 @@
-*.test.js
-*.map
-package.json
-package-lock.json
-README.md
-DEPLOY.md
-LICENSE
-.gitignore
-.assetsignore
